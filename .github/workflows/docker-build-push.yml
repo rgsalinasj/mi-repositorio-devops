@@ -63,17 +63,11 @@ jobs:
       - name: Send SSM command to EC2
         id: send-command
         run: |
-          COMMANDS='[
-            "docker stop mi-repositorio-devops-app || true",
-            "docker rm mi-repositorio-devops-app || true",
-            "docker pull ${{ secrets.DOCKERHUB_USERNAME }}/mi-repositorio-devops:${{ github.sha }}",
-            "docker run -d -p 5000:5000 --name mi-repositorio-devops-app ${{ secrets.DOCKERHUB_USERNAME }}/mi-repositorio-devops:${{ github.sha }}"
-          ]'
           COMMAND_ID=$(aws ssm send-command \
-            --instance-ids "i-0bd3f3c97c880aae6" \
+            --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
             --document-name "AWS-RunShellScript" \
-            --parameters "{\"commands\": ${COMMANDS}}" \
-            --region "${{ secrets.AWS_REGION }}" \
+            --parameters "commands.0='docker stop mi-repositorio-devops-app || true',commands.1='docker rm mi-repositorio-devops-app || true',commands.2='docker pull ${{ secrets.DOCKERHUB_USERNAME }}/mi-repositorio-devops:${{ github.sha }}',commands.3='docker run -d -p 5000:5000 --name mi-repositorio-devops-app ${{ secrets.DOCKERHUB_USERNAME }}/mi-repositorio-devops:${{ github.sha }}'" \
+            --region ${{ secrets.AWS_REGION }}" \
             --output text \
             --query "Command.CommandId")
           echo "SSM Command ID: $COMMAND_ID"
