@@ -70,7 +70,7 @@ jobs:
             "docker run -d -p 5000:5000 --name mi-repositorio-devops-app ${{ secrets.DOCKERHUB_USERNAME }}/mi-repositorio-devops:${{ github.sha }}"
           ]'
           COMMAND_ID=$(aws ssm send-command \
-            --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
+            --instance-ids "i-0bd3f3c97c880aae6" \
             --document-name "AWS-RunShellScript" \
             --parameters "{\"commands\": ${COMMANDS}}" \
             --region "${{ secrets.AWS_REGION }}" \
