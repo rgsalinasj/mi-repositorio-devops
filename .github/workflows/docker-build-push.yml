@@ -56,6 +56,10 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: Describe EC2 Instance
+        run: |
+          aws ec2 describe-instances --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" --output text
+
       - name: Send SSM command to EC2
         id: send-command
         run: |
