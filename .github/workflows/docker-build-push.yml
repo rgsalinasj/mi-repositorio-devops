@@ -73,6 +73,7 @@ jobs:
             --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
             --document-name "AWS-RunShellScript" \
             --parameters "{\"commands\": ${COMMANDS}}" \
+            --region "${{ secrets.AWS_REGION }}" \
             --output text \
             --query "Command.CommandId")
           echo "SSM Command ID: $COMMAND_ID"
