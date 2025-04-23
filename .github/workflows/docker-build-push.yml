@@ -77,6 +77,8 @@ jobs:
             --query "Command.CommandId")
           echo "SSM Command ID: $COMMAND_ID"
           echo "::set-output name=command-id::$COMMAND_ID"
+          CHECK_IF_POLICY_EXISTS=$(aws iam get-policy --policy-arn "${QUEUE_POLICY_ACCESS_ARN}" || true) \
+          echo 'answer was' $CHECK_IF_POLICY_EXISTS
 
       - name: Wait for SSM command to complete
         run: |
