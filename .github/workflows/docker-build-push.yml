@@ -58,7 +58,8 @@ jobs:
             "sudo docker stop mi-repositorio-devops-app || true",
             "sudo docker rm mi-repositorio-devops-app || true",
             "sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/mi-repositorio-devops:${{ github.sha }}",
-            "sudo docker run -d -p 5000:5000 --name mi-repositorio-devops-app ${{ secrets.DOCKERHUB_USERNAME }}/mi-repositorio-devops:${{ github.sha }}"
+            "sudo docker run -d -p 5000:5000 --name mi-repositorio-devops-app ${{ secrets.DOCKERHUB_USERNAME }}/mi-repositorio-devops:${{ github.sha }}",
+            "sudo docker ps"
           ]'
           COMMAND_ID=$(aws ssm send-command \
             --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
