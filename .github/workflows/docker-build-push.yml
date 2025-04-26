@@ -51,10 +51,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Describe EC2 Instance
-        run: |
-          aws ec2 describe-instances --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" --output text
-
       - name: Send SSM command to EC2
         id: send-command
         run: |
@@ -72,6 +68,9 @@ jobs:
             --query "Command.CommandId")
           echo "SSM Command ID: $COMMAND_ID"
           echo "command-id=$COMMAND_ID" >> $GITHUB_OUTPUT
+
+      - name: Details
+        run: aws ssm get-command-invocation --command-id "f3b6235a-1645-4f3d-83c6-342d98e1218e" --instance-id "i-0d36221e931eab93e" --details
           
       - name: Wait for SSM command to complete
         run: |
