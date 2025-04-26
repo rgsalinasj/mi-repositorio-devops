@@ -71,7 +71,8 @@ jobs:
             --output text \
             --query "Command.CommandId")
           echo "SSM Command ID: $COMMAND_ID"
-          echo "::set-output name=command-id::$COMMAND_ID"
+          echo "$COMMAND_ID" >> $GITHUB_OUTPUT
+          echo "command-id=$COMMAND_ID" >> $GITHUB_OUTPUT
           
       - name: Wait for SSM command to complete
         run: |
