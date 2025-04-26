@@ -47,10 +47,9 @@ jobs:
       - name: Deploy to EC2 via SSM
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          role-to-assume: arn:aws:iam::764218426688:role/GitHubActionsEC2DeployRole
           aws-region: ${{ secrets.AWS_REGION }}
+          role-session-name: GitHubActions
 
       - name: Describe EC2 Instance
         run: |
