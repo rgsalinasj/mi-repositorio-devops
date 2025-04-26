@@ -1,3 +1,5 @@
+#!/bin/bash
+
 name: Docker Build and Push
 
 on:
@@ -22,12 +24,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r app/requirements.txt
-
-      - name: Run tests
-        run: |
-          echo "Ejecutando pruebas..."
-          # Aquí tus comandos de prueba
-          echo "Pruebas finalizadas."
 
       - name: Login to Docker Hub
         uses: docker/login-action@v2
@@ -63,8 +59,21 @@ jobs:
       - name: Send SSM command to EC2
         id: send-command
         run: |
-          --parameters '{"commands": ["docker stop mi-repositorio-devops-app || true", "docker rm mi-repositorio-devops-app || true", "docker pull ${{ secrets.DOCKERHUB_USERNAME }}/mi-repositorio-devops:${{ github.sha }}", "docker run -d -p 5000:5000 --name mi-repositorio-devops-app ${{ secrets.DOCKERHUB_USERNAME }}/mi-repositorio-devops:${{ github.sha }}"]}'
-
+          COMMANDS='[
+            "docker stop mi-repositorio-devops-app || true",
+            "docker rm mi-repositorio-devops-app || true",
+            "docker pull ${{ secrets.DOCKERHUB_USERNAME }}/mi-repositorio-devops:${{ github.sha }}",
+            "docker run -d -p 5000:5000 --name mi-repositorio-devops-app ${{ secrets.DOCKERHUB_USERNAME }}/mi-repositorio-devops:${{ github.sha }}"
+          ]'
+          COMMAND_ID=$(aws ssm send-command \
+            --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
+            --document-name "AWS-RunShellScript" \
+            --parameters "{\"commands\": ${COMMANDS}}" \
+            --output text \
+            --query "Command.CommandId")
+          echo "SSM Command ID: $COMMAND_ID"
+          echo "::set-output name=command-id::$COMMAND_ID"
+          
       - name: Wait for SSM command to complete
         run: |
           aws ssm wait command-executed --command-id "${{ steps.send-command.outputs.command-id }}" --instance-id "${{ secrets.EC2_INSTANCE_ID }}"
