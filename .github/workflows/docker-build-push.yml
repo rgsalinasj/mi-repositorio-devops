@@ -49,7 +49,7 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::764218426688:role/GitHubActionsEC2DeployRole
           aws-region: ${{ secrets.AWS_REGION }}
-          role-session-name: GitHubActionsEC2DeployRole
+          role-session-name: GitHubActions
 
       - name: Describe EC2 Instance
         run: |
