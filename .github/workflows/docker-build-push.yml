@@ -59,7 +59,10 @@ jobs:
             "sudo docker rm mi-repositorio-devops-app || true",
             "sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/mi-repositorio-devops:${{ github.sha }}",
             "sudo docker run -d -p 5000:5000 --name mi-repositorio-devops-app ${{ secrets.DOCKERHUB_USERNAME }}/mi-repositorio-devops:${{ github.sha }}",
-            "sudo docker ps"
+            "INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)",
+            "REGION=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone | sed 's/.$//')",
+            "PUBLIC_DNS=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --region $REGION --output text --query 'Reservations[*].Instances[*].PublicDnsName')",
+            "echo \"Aplicación desplegada en: http://$PUBLIC_DNS:5000\""
           ]'
           COMMAND_ID=$(aws ssm send-command \
             --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
